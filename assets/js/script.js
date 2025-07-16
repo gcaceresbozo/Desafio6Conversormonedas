@@ -5,82 +5,81 @@ const selectMoneda = document.getElementById("moneda");
 const btnBuscar = document.getElementById("btnBuscar");
 const pResultado = document.getElementById("resultado");
 
+const baseUrl = 'https://mindicador.cl/api/';
 
-const baseUrl = 'https://mindicador.cl/api/'
+// Formatea el input con puntos de miles manualmente (límite: 100.000.000)
+inputMonto.addEventListener("input", (e) => {
+    let valor = e.target.value.replace(/\D/g, "");
 
+    // Limita a 8 dígitos (100 millones)
+    if (valor.length > 8) {
+        valor = valor.slice(0, 8);
+    }
 
+    if (valor === "") {
+        e.target.value = "";
+        return;
+    }
 
-//Funcion para traer Monedas. 
+    e.target.value = valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+});
 
+// Función para traer monedas
 async function getMonedas() {
     try {
-        const res = await fetch(baseUrl)
-        const data = await res.json()
-        const monedasPermitidas = ['dolar', 'euro', 'bitcoin']
+        const res = await fetch(baseUrl);
+        const data = await res.json();
+        const monedasPermitidas = ['dolar', 'euro', 'bitcoin'];
 
         monedasPermitidas.forEach((codigo) => {
-            const moneda = data[codigo]
-            const option = document.createElement('option')
-            option.value = codigo
-            option.textContent = moneda.nombre
-            selectMoneda.appendChild(option)
-
-        })
-
+            const moneda = data[codigo];
+            const option = document.createElement('option');
+            option.value = codigo;
+            option.textContent = moneda.nombre;
+            selectMoneda.appendChild(option);
+        });
     } catch (error) {
-        console.log(error)
+        console.log(error);
     }
 }
 
-//funcion para covertir
-
+// Función para convertir
 async function convertirMoneda() {
     try {
-        const montoPesos = Number(inputMonto.value)
-        const codigoMoneda = selectMoneda.value
+        const montoPesos = Number(inputMonto.value.replace(/\./g, ""));
+        const codigoMoneda = selectMoneda.value;
 
         if (!codigoMoneda) {
-            pResultado.textContent = 'Por favor selecciona una moneda'
-            return
+            pResultado.textContent = 'Por favor selecciona una moneda';
+            return;
         }
 
-        const res = await fetch(`https://mindicador.cl/api/${codigoMoneda}`)
-        const data = await res.json()
-        const valorMoneda = data.serie[0].valor
+        const res = await fetch(`https://mindicador.cl/api/${codigoMoneda}`);
+        const data = await res.json();
+        const valorMoneda = data.serie[0].valor;
 
-        const resultado = montoPesos / valorMoneda
+        const resultado = montoPesos / valorMoneda;
 
-
-
-        pResultado.textContent = `${montoPesos} pesos Chileno son aprox ${resultado.toFixed(2)} ${codigoMoneda}`;
+        pResultado.textContent = `${montoPesos.toLocaleString("es-CL")} pesos Chilenos son aprox ${resultado.toLocaleString("es-CL", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${codigoMoneda}`;
         renderGrafico(codigoMoneda);
-
-
     } catch (error) {
-        console.log(error)
+        console.log(error);
     }
 }
 
+getMonedas();
 
-getMonedas()
+btnBuscar.addEventListener('click', convertirMoneda);
 
-// Grafico
-
-btnBuscar.addEventListener('click', convertirMoneda)
-
-
-
-
-
-
-let myChart; // variable global para destruir el gráfico anterior si existe
+// Gráfico
+let myChart;
 
 async function renderGrafico(moneda) {
     try {
         const res = await fetch(`https://mindicador.cl/api/${moneda}`);
         const data = await res.json();
 
-        const ultimos10 = data.serie.slice(0, 10).reverse(); // Últimos 10 días en orden cronológico
+        const ultimos10 = data.serie.slice(0, 10).reverse();
 
         const labels = ultimos10.map((item) =>
             new Date(item.fecha).toLocaleDateString("es-CL")
@@ -95,12 +94,12 @@ async function renderGrafico(moneda) {
                     {
                         label: `Historial últimos 10 días (${moneda.toUpperCase()})`,
                         data: valores,
-                        borderColor: "rgb(255, 99, 132)",              // Línea rosada
-                        backgroundColor: "rgba(255, 99, 132, 0.2)",     // Fondo suave rosado
+                        borderColor: "rgb(255, 99, 132)",
+                        backgroundColor: "rgba(255, 99, 132, 0.2)",
                         fill: false,
-                        tension: 0.3,                                   // Suaviza las líneas
-                        pointRadius: 5,                                 // Tamaño de los puntos
-                        pointBackgroundColor: "rgb(255, 99, 132)",      // Puntos rosados
+                        tension: 0.3,
+                        pointRadius: 5,
+                        pointBackgroundColor: "rgb(255, 99, 132)",
                         pointBorderColor: "white",
                         pointBorderWidth: 2
                     }
@@ -132,19 +131,14 @@ async function renderGrafico(moneda) {
             }
         };
 
-        // Destruye el gráfico anterior si existe
         if (myChart) {
             myChart.destroy();
         }
 
         const ctx = document.getElementById("grafico").getContext("2d");
         myChart = new Chart(ctx, config);
-
     } catch (error) {
         console.error("Error al cargar el gráfico:", error);
-        document.getElementById("grafico").outerHTML =
-            "<p>Error al cargar el gráfico</p>";
+        document.getElementById("grafico").outerHTML = "<p>Error al cargar el gráfico</p>";
     }
 }
-
-
