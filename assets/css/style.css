@@ -1,0 +1,17 @@
+.no-spinner {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.no-spinner::-webkit-outer-spin-button,
+.no-spinner::-webkit-inner-spin-button {
+    margin: 0;
+    -webkit-appearance: none;
+}
+
+#grafico {
+  background-color: white;
+  border-radius: 10px;
+  margin: 20px auto;
+  display: block;
+}

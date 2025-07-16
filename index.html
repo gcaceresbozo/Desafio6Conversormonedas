@@ -1,21 +1,72 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Conversor de Monedas</title>
+    <link rel="shortcut icon" href="./assets/img/pngegg.png" type="image/x-icon">
     <link rel="stylesheet" href="./assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    
+    <!-- grafico-->
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 
 </head>
-<body>
+
+<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center p-6">
+    <h1 class="text-3xl font-bold mb-6">Conversor de Monedas</h1>
+
+
+    <section class="">
+
+        <div class="flex flex-col">
+            <label for="Pesos CLP">Pesos CLP</label>
+            <input id="monto" type="number" class="bg-gray-600 rounded no-spinner px-2"
+                placeholder="Ingrese monto en CLP">
+
+        </div>
+
+        <div class="flex flex-col">
+            <label for="Moneda">Moneda a Convertir</label>
+            <select id="moneda" class="bg-gray-600 rounded no-spinner px-2" placeholder="Ingrese monto en CLP">
+
+
+        <option value="">seleciones una moneda </option>
+            </select>
+        </div>
+
+
+
+
+        
+<button id="btnBuscar" class="bg-blue-600 rounded py-2 px-4 mt-2 w-full">buscar</button>
+
+<p id="resultado" class="text-lg text-green-400 text-center w-full max-w-md mx-auto mt-4">
+  Respuesta
+</p>
+
+<p id="error" class="text-lg text-red-400 text-center max-w-[200px]"></p>
     
-    <h1 class="text-3xl font-bold underline">
-      Hello world!
-    </h1>
+
+<h1 class="text-2xl md:text-3xl font-bold text-center text-pink-400 mt-8 mb-4">
+  Conversión con historial
+</h1>
+
+
+<canvas id="grafico" width="600" height="300"></canvas>
 
 
 
-<script src="./assets/js/script.js"></script>
+    </section>
+
+
+
+
+
+    <script src="./assets/js/script.js"></script>
 </body>
+
 </html>
